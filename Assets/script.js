@@ -87,3 +87,53 @@ form.addEventListener("submit", function(event) {
 
 console.log(lat);
 console.log(lon);
+
+// Now lets fetch the 5-day forecast data of user city using lat & lon generated in the first fetch:
+fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&cnt=48&appid=${APIKey2}`)
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+            const date = dayjs().format("M/D/YYYY");
+        // now that 5-6 days of weather data, updated every 3 hours has been returned by the API,
+        // we must loop through the array of weather data and extract the relevant data from each time point:
+        let tempArray = [];
+        data.list.forEach(function(item) {
+            tempArray.push(item.main.temp - 273.15);
+        });
+        console.log(tempArray);
+            
+        // that's a very long array. let's just get all the temps at a certain time point, say 6AM:
+        const sixAMTempArray = data.list.filter(function(item) {
+            let date = new Date(item.dt_txt);
+            return date.getHours() === 6;
+        }).map(function(item) {
+            return item.main.temp - 273.15;
+        });
+        console.log(sixAMTempArray);
+
+            // // let's repeat for wind speed:
+            // const sixAMWindArray = data.list.filter(function(item) {
+            //     let date = new Date(item.dt_txt);
+            //     return date.getHours() === 6;
+            // }).map(function(item) {
+            //     return item.main.temp - 273.15;
+            // });
+            // console.log(sixAMTempArray);
+            
+            // // repeat for humidity:
+            // const sixAMTempArray = data.list.filter(function(item) {
+            //     let date = new Date(item.dt_txt);
+            //     return date.getHours() === 6;
+            // }).map(function(item) {
+            //     return item.main.temp - 273.15;
+            // });
+            // console.log(sixAMTempArray);
+
+            // // finally repeat for icon:
+            // const sixAMTempArray = data.list.filter(function(item) {
+            //     let date = new Date(item.dt_txt);
+            //     return date.getHours() === 6;
+            // }).map(function(item) {
+            //     return item.main.temp - 273.15;
+            // });
+            // console.log(sixAMTempArray);
