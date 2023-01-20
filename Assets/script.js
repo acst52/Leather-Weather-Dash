@@ -4,7 +4,7 @@
 // Let's start with some global vars:
 const APIKey1 = "a03e4beee32f480681623329a1fb8030";  // can use same API for both*
 const APIKey2 = "d460b3121f81ff3c2ab30beee768e22b";
-const city = document.getElementById("cityInput").value.trim();
+// const city = document.getElementById("cityInput").value.trim();
 const todayContainer = document.getElementById("response")
 const form = document.getElementById("weatherForm");
 
@@ -20,7 +20,8 @@ let lon;
     // 5. generate HTML elements and display weather data to user
 form.addEventListener("submit", function(event) {
     event.preventDefault();
-    if (city !== "") {  // as long as city isn't empty,
+    // if loop seemed to be messing up city input above so commented out for now:
+    // if (city !== "") {  // as long as city isn't empty,
         // Make a call to the OpenCage Geocoding API to get the latitude and longitude
         fetch(`https://api.opencagedata.com/geocode/v1/json?q=${city}&key=${APIKey1}`)
         .then(response => response.json())
@@ -56,7 +57,7 @@ form.addEventListener("submit", function(event) {
                 // now lets give the elements attibutes b/c we're using bootstrap, want to give bs classes
                 card.setAttribute("class", "card");
                 cardBody.setAttribute("class", "card-body");
-                //append
+                // append
                 card.append(cardBody);
                 heading.setAttribute("class", "h3 card-title");
                 tempElement.setAttribute("class", "card-text");
@@ -81,8 +82,8 @@ form.addEventListener("submit", function(event) {
             console.error("Error fetching geolocation data: Invalid city name or no result found");
         }});
     } else {
-        console.error("Error fetching geolocation data: City name cannot be empty")
-    };
+       // console.error("Error fetching geolocation data: City name cannot be empty")
+   // };  - was closing now commented out if statement above
 });
 
 console.log(lat);
@@ -90,6 +91,9 @@ console.log(lon);
 
 // Now lets fetch the 5-day forecast data of user city using lat & lon generated in the first fetch:
 fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&cnt=48&appid=${APIKey2}`)
+
+    // in for loop can try i+8, increment i by 8 each time, get info each 8th time stamp that you need
+ 
         .then(response => response.json())
         .then(data => {
             console.log(data);
@@ -137,3 +141,22 @@ fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&cn
             //     return item.main.temp - 273.15;
             // });
             // console.log(sixAMTempArray);
+
+// let's generate each forecast day using nested for loops to append the 
+    //  ith object in each array to their respective divs:
+
+// ^ get temp humidity wind icon array vars from loops above ^
+let generatedForecast = "";
+let container = document.querySelector(".container-flex");
+for (let i = 0; i < 5; i+=8) {
+    let div = document.createElement("div");
+    generatedForecast = `Temp: ${data.list.temp[i]}&#8451;, Humidity: ${humidityArray[i]}%, Wind Speed: ${windSpeedArray[i]} m/s`;
+    div.innerHTML = generatedForecast;
+    container.appendChild(div);
+    }
+});
+
+// cnt = how many 3 hour blocks of time you want. 48 for 6 days = today weather + 5 day froecast. 
+    // LOOP THRU LIST NOT EVERY ITEM YOU WANT B/C EACH INDEX OF LIST HAS EVERYTHING YOU NEED, temp, humidity, wind, icon
+// create loop, looking thru every 8 things in list. dynamically generate content for forecast card. do 5 times. 
+// so like ... data.list.main.temp, data.list.humidity --> list holds all the indexes, data index 1.. go thru list for every 8 
