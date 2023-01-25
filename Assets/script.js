@@ -77,14 +77,6 @@ form.addEventListener("submit", function(event) {
                 todayContainer.innerHTML = "";
                 todayContainer.append(card);
             })
-            .catch(error => console.error('Error fetching weather data:', error));
-        } else {
-            console.error("Error fetching geolocation data: Invalid city name or no result found");
-        }});
-    } else {
-       // console.error("Error fetching geolocation data: City name cannot be empty")
-   // };  - was closing now commented out if statement above
-});
 
 console.log(lat);
 console.log(lon);
