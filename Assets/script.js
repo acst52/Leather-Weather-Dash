@@ -7,10 +7,21 @@ const APIKey2 = "d460b3121f81ff3c2ab30beee768e22b";
 // const city = document.getElementById("cityInput").value.trim();
 const todayContainer = document.getElementById("response")
 const form = document.getElementById("weatherForm");
+let searchInput = document.querySelector("#cityInput");
+let searchHistory = [];
+const searchHistoryContainer = document.querySelector("#history");
 
-// Let's define the city coordinates globally to use in different fetchez
-let lat;
-let lon;
+function displayHistory() {
+    searchHistoryContainer.innerHTML = ""; // clear out history before adding new city so no duplicates
+    for (var i = searchHistory.length -1 ; i >= 0 ; i--) { // most recently searched cities render at top
+        let btn = document.createElement("button");
+        btn.setAttribute("type", "button");
+        btn.setAttribute("class", "history-btn btn btn-info mt-1");
+        btn.setAttribute("data-search", searchHistory[i]);
+        btn.textContent = searchHistory[i];
+        searchHistoryContainer.append(btn);
+    }
+};
 
 // Once user submits a city, let's:
     // 1. prevent page from refreshing
