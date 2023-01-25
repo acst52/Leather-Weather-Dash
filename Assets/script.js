@@ -90,73 +90,58 @@ console.log(lat);
 console.log(lon);
 
 // Now lets fetch the 5-day forecast data of user city using lat & lon generated in the first fetch:
-fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&cnt=48&appid=${APIKey2}`)
-
-    // in for loop can try i+8, increment i by 8 each time, get info each 8th time stamp that you need
- 
-        .then(response => response.json())
-        .then(data => {
-            console.log(data);
-            const date = dayjs().format("M/D/YYYY");
-        // now that 5-6 days of weather data, updated every 3 hours has been returned by the API,
-        // we must loop through the array of weather data and extract the relevant data from each time point:
-        let tempArray = [];
-        data.list.forEach(function(item) {
-            tempArray.push(item.main.temp - 273.15);
-        });
-        console.log(tempArray);
-            
-        // that's a very long array. let's just get all the temps at a certain time point, say 6AM:
-        const sixAMTempArray = data.list.filter(function(item) {
-            let date = new Date(item.dt_txt);
-            return date.getHours() === 6;
-        }).map(function(item) {
-            return item.main.temp - 273.15;
-        });
-        console.log(sixAMTempArray);
-
-            // // let's repeat for wind speed:
-            // const sixAMWindArray = data.list.filter(function(item) {
-            //     let date = new Date(item.dt_txt);
-            //     return date.getHours() === 6;
-            // }).map(function(item) {
-            //     return item.main.temp - 273.15;
-            // });
-            // console.log(sixAMTempArray);
-            
-            // // repeat for humidity:
-            // const sixAMTempArray = data.list.filter(function(item) {
-            //     let date = new Date(item.dt_txt);
-            //     return date.getHours() === 6;
-            // }).map(function(item) {
-            //     return item.main.temp - 273.15;
-            // });
-            // console.log(sixAMTempArray);
-
-            // // finally repeat for icon:
-            // const sixAMTempArray = data.list.filter(function(item) {
-            //     let date = new Date(item.dt_txt);
-            //     return date.getHours() === 6;
-            // }).map(function(item) {
-            //     return item.main.temp - 273.15;
-            // });
-            // console.log(sixAMTempArray);
-
-// let's generate each forecast day using nested for loops to append the 
-    //  ith object in each array to their respective divs:
-
-// ^ get temp humidity wind icon array vars from loops above ^
-let generatedForecast = "";
+let forecastData;
 let container = document.querySelector(".container-flex");
-for (let i = 0; i < 5; i+=8) {
-    let div = document.createElement("div");
-    generatedForecast = `Temp: ${data.list.temp[i]}&#8451;, Humidity: ${humidityArray[i]}%, Wind Speed: ${windSpeedArray[i]} m/s`;
-    div.innerHTML = generatedForecast;
-    container.appendChild(div);
-    }
-});
 
-// cnt = how many 3 hour blocks of time you want. 48 for 6 days = today weather + 5 day froecast. 
-    // LOOP THRU LIST NOT EVERY ITEM YOU WANT B/C EACH INDEX OF LIST HAS EVERYTHING YOU NEED, temp, humidity, wind, icon
-// create loop, looking thru every 8 things in list. dynamically generate content for forecast card. do 5 times. 
-// so like ... data.list.main.temp, data.list.humidity --> list holds all the indexes, data index 1.. go thru list for every 8 
+fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&cnt=51&appid=${APIKey2}`)
+    .then(response => response.json())
+    .then(data => {
+        forecastData = data;
+        console.log(forecastData);
+    // const date = dayjs().format("M/D/YYYY");
+    // now that 5-6 days of weather data, updated every 3 hours has been returned by the API,
+    // we must loop through weather data & get all the temps at a certain time point:
+for (var i = 2; i < data.list.length; i+=8) {
+        var date = data.list[i].dt_txt.split(" ")[0];
+        var icon = `https://openweathermap.org/img/w/${data.list[i].weather[0].icon}.png`;
+        var temperature = data.list[i].main.temp - 273.15;
+        var humidity = data.list[i].main.humidity;
+        var windSpeed = data.list[i].wind.speed;
+
+        // create a new div to add each 8th i forecast:
+        var forecast = document.createElement("div");
+        var forecastCard = document.createElement("div");
+        var forecastCardBody = document.createElement("div");
+        var forecastHeading = document.createElement("h3");
+        var iconImg = document.createElement("img");
+        iconImg.setAttribute("src", icon);
+        var forecastTemp = document.createElement("p");
+        var forecastHumidity = document.createElement("p");
+        var forecastWind = document.createElement("p");
+        
+        forecast.append(forecastCard);
+        forecastCard.append(forecastCardBody);
+        forecastCardBody.append(forecastHeading, forecastTemp, forecastHumidity, forecastWind);
+
+        forecast.setAttribute("class", "col-md");
+        forecastCard.setAttribute("class", "card bg-primary h-100 text-white");
+        forecastCardBody.setAttribute("class", "card-body p-2");
+        forecastHeading.setAttribute("class", "card-title");
+        forecastTemp.setAttribute("class", "card-text");
+        forecastHumidity.setAttribute("class", "card-text");
+        forecastWind.setAttribute("class", "card-text");
+
+        forecastHeading.textContent = `${date}`;
+        forecastHeading.append(iconImg);
+        forecastTemp.textContent = `Temp: ${temperature.toFixed(0)}C`;
+        forecastHumidity.textContent = `Humidity: ${humidity}%`;
+        forecastWind.textContent = `Wind speed: ${windSpeed.toFixed(0)}m/s`;
+            
+        // append the div made above to the HTML:
+        container.appendChild(forecast);
+    }
+}
+)}
+)}
+})
+};
