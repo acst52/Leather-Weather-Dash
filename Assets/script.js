@@ -23,6 +23,46 @@ function displayHistory() {
     }
 };
 
+function addToHistory(search) {
+    if (searchHistory.indexOf(search) !== -1) { // indexOf looks thru search history, if search exists, then return -1, don't add to history
+        return;
+    } 
+    searchHistory.push(search);
+    localStorage.setItem("cities", JSON.stringify(searchHistory));
+    displayHistory(); // as soon as we add something to history, run displayHistory to update & display list
+}
+
+function getHistory() {
+    let storedHistory = localStorage.getItem("cities");
+    if (storedHistory) {
+        searchHistory = JSON.parse(storedHistory);
+    }
+    displayHistory();
+}
+
+// Once a city is searched and user clicks get weather button, fcn to handle local storage:
+function handleSearch(e) { // e = event
+    if (!searchInput.value) {
+        return; // dont do anything if user input field empty
+    }
+    e.preventDefault();
+    let search = searchInput.value.trim();
+    addToHistory(search);
+    document.querySelector("#forecast").innerHTML = "";
+    getWeather(search);
+    searchInput.value = ""; // clear out input
+};
+
+function handleBtnClick(e) {
+    if (!e.target.matches(".history-btn")) { // makes sure user clicks on button 
+        return;
+    }
+    let btn = e.target;
+    let search = btn.getAttribute("data-search");
+    document.querySelector("#forecast").innerHTML = "";
+    getWeather(search);
+};
+
 // Once user submits a city, let's:
     // 1. prevent page from refreshing
     // 2. make sure the city field isn't empty
