@@ -30,5 +30,7 @@ THEN I am again presented with current and future conditions for that city
 #### Mock-up:
 ![06-server-side-apis-homework-demo](https://user-images.githubusercontent.com/116177485/214971281-3f3a05d4-3eab-4d35-aa97-5be94332245b.png)
 
-Deployed App Demo:
+#### Deployed App Demo:
 ![Weather Dashboard](https://user-images.githubusercontent.com/116177485/214971338-a930e086-04b0-4738-816a-afaecf319a2f.gif)
+
+### Thank you for reading!!
