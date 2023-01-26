@@ -62,25 +62,24 @@ function handleBtnClick(e) {
     getWeather(search);
 };
 
-// Once user submits a city, let's:
 function getWeather(search) {
         // Make a call to the OpenCage Geocoding API to get the latitude and longitude
-        fetch(`https://api.opencagedata.com/geocode/v1/json?q=${city}&key=${APIKey1}`)
+        fetch(`https://api.opencagedata.com/geocode/v1/json?q=${search}&key=${APIKey1}`)
         .then(response => response.json())
         .then(data => {
             console.log(data);
             // Get the latitude and longitude from the OpenCageData API response, make sure arrays are not empty:
         if (data.results[0] !== undefined && data.results[0].geometry !== undefined) {
-            lat = data.results[0].geometry.lat;
-            lon = data.results[0].geometry.lng;
+            var lat = data.results[0].geometry.lat;
+            var lon = data.results[0].geometry.lng;
             
             // Now that we have the lat & longitude, we can make a request to the OpenWeatherMap API using fetch:
             fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${APIKey2}`)
             .then(response => response.json())
             .then(data => {
                 console.log(data);
-                // now lets declare vars for all data that we need:
                 const date = dayjs().format("M/D/YYYY");
+                // now lets declare vars for all the data that we need:
                 const tempC = data.main.temp - 273.15 // convert temp: °C = K - 273.15
                 const wind = data.wind.speed;
                 const humidity = data.main.humidity;
@@ -95,10 +94,11 @@ function getWeather(search) {
                 const windElement = document.createElement("p");
                 const humidityElement = document.createElement("p");
 
-                // now lets give the elements attibutes b/c we're using bootstrap, want to give bootstrap classes
+                // now lets give the elements attibutes b/c we're using bootstrap, want to give bs classes
                 card.setAttribute("class", "card");
                 cardBody.setAttribute("class", "card-body");
-                // append and set attributes (classes)
+
+                // append and set classes for styling: 
                 card.append(cardBody);
                 heading.setAttribute("class", "h3 card-title");
                 tempElement.setAttribute("class", "card-text");
@@ -107,7 +107,7 @@ function getWeather(search) {
                 weatherIcon.setAttribute("src", iconURL);
                 weatherIcon.setAttribute("class", "weather-img");
 
-                // now give all our creations text content
+                // now give all these text content
                 heading.textContent = `${search} ${date}`
                 heading.append(weatherIcon);
                 tempElement.textContent = `Temp: ${tempC.toFixed(0)} C`
@@ -117,23 +117,23 @@ function getWeather(search) {
                 cardBody.append(heading, tempElement, windElement, humidityElement);
                 todayContainer.innerHTML = "";
                 todayContainer.append(card);
-            })
 
 console.log(lat);
 console.log(lon);
 
-// Now lets fetch the 5-day forecast data of user search using lat & lon generated in the first fetch:
+// now let's fetch the 5-day forecast data of user search using lat & lon generated in 1st fetch:
 let forecastData;
-let container = document.querySelector(".container-flex"); // queryselector is same as getelementbyid
+let container = document.querySelector(".container-flex");
 
 fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&cnt=51&appid=${APIKey2}`)
     .then(response => response.json())
     .then(data => {
         forecastData = data;
         console.log(forecastData);
-    // now that 5 days of weather data (updated every 3 hours = 8 times per day) has been returned by the API,
-    // we must loop through it & get all the temps at a certain time point:
-for (var i = 2; i < data.list.length; i+=8) { // start at i=2 because i=0 was 3AM, but 9AM weather is more informative
+    // now that 5-6 days of weather data, updated every 3 hours has been returned by the API,
+    // we must loop through weather data & get all the temps at a certain time point:
+        // start at i=2 because i=0 was 3AM, but 9AM weather is more informative...
+for (var i = 2; i < data.list.length; i+=8) {
         var date = data.list[i].dt_txt.split(" ")[0]; // since dt_txt also had time, split to get rid of time
         var icon = `https://openweathermap.org/img/w/${data.list[i].weather[0].icon}.png`;
         var temperature = data.list[i].main.temp - 273.15;
@@ -142,7 +142,7 @@ for (var i = 2; i < data.list.length; i+=8) { // start at i=2 because i=0 was 3A
 
         // create a new div to add each 8th i forecast:
         var forecast = document.createElement("div");
-        // the two extra elements created below get appended to forecast div - this is for styling purposes
+        // next 2 are for styling purposes:
         var forecastCard = document.createElement("div");
         var forecastCardBody = document.createElement("div");
         var forecastHeading = document.createElement("h3");
@@ -155,7 +155,7 @@ for (var i = 2; i < data.list.length; i+=8) { // start at i=2 because i=0 was 3A
         forecast.append(forecastCard);
         forecastCard.append(forecastCardBody);
         forecastCardBody.append(forecastHeading, forecastTemp, forecastHumidity, forecastWind);
-        
+
         // add classes for styling purposes:
         forecast.setAttribute("class", "col-md");
         forecastCard.setAttribute("class", "card bg-primary h-100 text-white");
@@ -165,7 +165,7 @@ for (var i = 2; i < data.list.length; i+=8) { // start at i=2 because i=0 was 3A
         forecastHumidity.setAttribute("class", "card-text");
         forecastWind.setAttribute("class", "card-text");
 
-        // add content to forecast cards:
+        // add content to the forecast cards:
         forecastHeading.textContent = `${date}`;
         forecastHeading.append(iconImg);
         forecastTemp.textContent = `Temp: ${temperature.toFixed(0)}C`;
